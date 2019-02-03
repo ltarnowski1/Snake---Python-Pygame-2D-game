@@ -1,4 +1,5 @@
-import pygame
+import pygame as p
+import random as r
 import sys
 
 
@@ -8,10 +9,12 @@ class Game:
     direction = ''
 
     def __init__(self):
-        pygame.init()
-        self.screen = pygame.display.set_mode((600, 600))
-        self.head = pygame.Rect(100, 100, 20, 20)
-        self.clock = pygame.time.Clock()
+        p.init()
+        self.screen = p.display.set_mode((600, 600), 0, 32)
+        p.display.set_caption('Snake')
+        self.head = p.Rect(100, 100, 20, 20)
+        self.clock = p.time.Clock()
+        self.food = p.Rect(r.randint(0, 580), r.randint(0, 580), 20, 20)
 
     def execution(self):
         while True:
@@ -22,18 +25,18 @@ class Game:
 
     @staticmethod
     def events():
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+        for event in p.event.get():
+            if event.type == p.KEYDOWN and event.key == p.K_ESCAPE:
                 sys.exit(0)
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_w:
+            elif event.type == p.KEYDOWN and event.key == p.K_w:
                 Game.direction = 'up'
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+            elif event.type == p.KEYDOWN and event.key == p.K_s:
                 Game.direction = 'down'
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_a:
+            elif event.type == p.KEYDOWN and event.key == p.K_a:
                 Game.direction = 'left'
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_d:
+            elif event.type == p.KEYDOWN and event.key == p.K_d:
                 Game.direction = 'right'
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+            elif event.type == p.KEYDOWN and event.key == p.K_SPACE:
                 Game.switch_pause()
 
     @staticmethod
@@ -44,7 +47,10 @@ class Game:
             Game.running = True
 
     def loop(self, clock):
-        clock.tick(100)
+        clock.tick(150)
+        if self.food.colliderect(self.head):
+            del self.food
+            self.food = p.Rect(r.randint(0, 580), r.randint(0, 580), 20, 20)
         self.snake_move()
 
     def snake_move(self):
@@ -59,8 +65,9 @@ class Game:
 
     def render(self):
         self.screen.fill((0, 0, 0))
-        pygame.draw.rect(self.screen, (0, 150, 255), self.head)
-        pygame.display.flip()
+        p.draw.rect(self.screen, (255, 0, 0), self.food)
+        p.draw.rect(self.screen, (0, 150, 255), self.head)
+        p.display.flip()
 
 
 if __name__ == "__main__":
