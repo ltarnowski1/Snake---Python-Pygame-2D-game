@@ -1,5 +1,5 @@
+from food import Food
 import pygame as p
-import random as r
 import sys
 
 
@@ -14,7 +14,8 @@ class Game:
         p.display.set_caption('Snake')
         self.head = p.Rect(100, 100, 20, 20)
         self.clock = p.time.Clock()
-        self.food = p.Rect(r.randint(0, 580), r.randint(0, 580), 20, 20)
+        self.food = Food((255, 0, 0), (0, 580), (0, 580), 20, 20)    # color, rangeX, rangeY, sizeX, sizeY
+        self.foodRect = self.food.init_rect_from_food()
 
     def execution(self):
         while True:
@@ -48,9 +49,11 @@ class Game:
 
     def loop(self, clock):
         clock.tick(150)
-        if self.food.colliderect(self.head):
-            del self.food
-            self.food = p.Rect(r.randint(0, 580), r.randint(0, 580), 20, 20)
+        if self.foodRect.colliderect(self.head):
+            print('KOLIZJA')
+            del self.foodRect, self.food
+            self.food = Food((255, 0, 0), (0, 580), (0, 580), 20, 20)
+            self.foodRect = self.food.init_rect_from_food()
         self.snake_move()
 
     def snake_move(self):
@@ -65,7 +68,7 @@ class Game:
 
     def render(self):
         self.screen.fill((0, 0, 0))
-        p.draw.rect(self.screen, (255, 0, 0), self.food)
+        p.draw.rect(self.screen, self.food.color, self.foodRect)
         p.draw.rect(self.screen, (0, 150, 255), self.head)
         p.display.flip()
 
