@@ -13,15 +13,15 @@ class Food(cube.Cube):
         p.draw.rect(screen, color, rect)
 
     def set_rect(self, pos_x, pos_y):
-        self.rect.x = pos_x
-        self.rect.y = pos_y
+        self.rect.x = pos_x*20
+        self.rect.y = pos_y*20
 
     def set_random_food_position(self, range_x, range_y):
         xa, xb = range_x
         ya, yb = range_y
         random_x = r.randint(xa, xb)
         random_y = r.randint(ya, yb)
-        self.pos_x = random_x
-        self.pos_y = random_y
+        self.pos_x = random_x*20
+        self.pos_y = random_y*20
 
 

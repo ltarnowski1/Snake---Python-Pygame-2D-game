@@ -16,7 +16,7 @@ class Game:
         self.snake = []
         self.snake.append(Cube((0, 255, 0), 200, 200, 20, 20))
         self.clock = p.time.Clock()
-        self.food = Food((255, 0, 0), (0, 580), (0, 580), 20, 20)    # color, rangeX, rangeY, sizeX, sizeY
+        self.food = Food((255, 0, 0), (0, 29), (0, 29), 20, 20)    # color, rangeX, rangeY, sizeX, sizeY
 
     def execution(self):
         while True:
@@ -51,7 +51,7 @@ class Game:
     def loop(self, clock):
         clock.tick(4)
         if self.food.rect.colliderect(self.snake[0].rect):
-            self.food.set_rect(r.randint(0, 580), r.randint(0, 580))
+            self.food.set_rect(r.randint(0, 29), r.randint(0, 29))
             if self.snake[0].direction == 'up':
                 self.snake.append(Cube((0, 0, 255), 0, 0, 20, 20))
             elif self.snake[0].direction == 'down':
@@ -60,10 +60,13 @@ class Game:
                 self.snake.append(Cube((0, 0, 255), 0, 0, 20, 20))
             elif self.snake[0].direction == 'left':
                 self.snake.append(Cube((0, 0, 255), 0, 0, 20, 20))
+        for i in range(1, len(self.snake)):
+            if self.snake[0].rect.colliderect(self.snake[i].rect):
+                sys.exit(0)  # WRÓCIC
         self.snake_move()
 
     def snake_move(self):
-        for i in range(len(self.snake)-1,0,-1):
+        for i in range(len(self.snake)-1, 0, -1):
             self.snake[i].rect.x = self.snake[i-1].rect.x
             self.snake[i].rect.y = self.snake[i-1].rect.y
 
@@ -77,12 +80,13 @@ class Game:
             self.snake[0].rect.x = self.snake[0].rect.x + 20
 
     def render(self):
-        self.screen.fill((0, 0, 0))
-        p.draw.rect(self.screen, self.snake[0].color, self.snake[0].rect)
-        for i in range(1, len(self.snake)):
+        self.screen.fill((122, 125, 128))
+        for i in range(1, 30):
+            p.draw.line(self.screen, (255, 255, 255), (i*20, 0), (i*20, 600), 1)
+            p.draw.line(self.screen, (255, 255, 255), (0, i*20), (600, i*20), 1)
+        for i in range(0, len(self.snake)):
             p.draw.rect(self.screen, self.snake[i].color, self.snake[i].rect)
         self.food.draw_food_rect(self.screen, self.food.color, self.food.rect)
-
         p.display.flip()
 
 
