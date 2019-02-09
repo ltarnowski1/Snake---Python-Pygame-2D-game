@@ -1,42 +1,43 @@
+from cube import Cube
 from food import Food
 import pygame as p
 import sys
+import random as r
 
 
 class Game:
 
     running = True
-    direction = ''
 
     def __init__(self):
         p.init()
         self.screen = p.display.set_mode((600, 600), 0, 32)
         p.display.set_caption('Snake')
-        self.head = p.Rect(100, 100, 20, 20)
+        self.snake = []
+        self.snake.append(Cube((0, 255, 0), 200, 200, 20, 20))
         self.clock = p.time.Clock()
         self.food = Food((255, 0, 0), (0, 580), (0, 580), 20, 20)    # color, rangeX, rangeY, sizeX, sizeY
-        self.foodRect = self.food.init_rect_from_food()
 
     def execution(self):
         while True:
-            Game.events()
+            Game.events(self)
             if Game.running:
                 self.loop(self.clock)
                 self.render()
 
     @staticmethod
-    def events():
+    def events(self):
         for event in p.event.get():
             if event.type == p.KEYDOWN and event.key == p.K_ESCAPE:
                 sys.exit(0)
             elif event.type == p.KEYDOWN and event.key == p.K_w:
-                Game.direction = 'up'
+                self.snake[0].direction = 'up'
             elif event.type == p.KEYDOWN and event.key == p.K_s:
-                Game.direction = 'down'
+                self.snake[0].direction = 'down'
             elif event.type == p.KEYDOWN and event.key == p.K_a:
-                Game.direction = 'left'
+                self.snake[0].direction = 'left'
             elif event.type == p.KEYDOWN and event.key == p.K_d:
-                Game.direction = 'right'
+                self.snake[0].direction = 'right'
             elif event.type == p.KEYDOWN and event.key == p.K_SPACE:
                 Game.switch_pause()
 
@@ -48,28 +49,40 @@ class Game:
             Game.running = True
 
     def loop(self, clock):
-        clock.tick(150)
-        if self.foodRect.colliderect(self.head):
-            print('KOLIZJA')
-            del self.foodRect, self.food
-            self.food = Food((255, 0, 0), (0, 580), (0, 580), 20, 20)
-            self.foodRect = self.food.init_rect_from_food()
+        clock.tick(4)
+        if self.food.rect.colliderect(self.snake[0].rect):
+            self.food.set_rect(r.randint(0, 580), r.randint(0, 580))
+            if self.snake[0].direction == 'up':
+                self.snake.append(Cube((0, 0, 255), 0, 0, 20, 20))
+            elif self.snake[0].direction == 'down':
+                self.snake.append(Cube((0, 0, 255), 0, 0, 20, 20))
+            elif self.snake[0].direction == 'right':
+                self.snake.append(Cube((0, 0, 255), 0, 0, 20, 20))
+            elif self.snake[0].direction == 'left':
+                self.snake.append(Cube((0, 0, 255), 0, 0, 20, 20))
         self.snake_move()
 
     def snake_move(self):
-        if Game.direction == 'up':
-            self.head = self.head.move(0, -1)
-        elif Game.direction == 'down':
-            self.head = self.head.move(0, 1)
-        elif Game.direction == 'left':
-            self.head = self.head.move(-1, 0)
-        elif Game.direction == 'right':
-            self.head = self.head.move(1, 0)
+        for i in range(len(self.snake)-1,0,-1):
+            self.snake[i].rect.x = self.snake[i-1].rect.x
+            self.snake[i].rect.y = self.snake[i-1].rect.y
+
+        if self.snake[0].direction == 'up':
+            self.snake[0].rect.y = self.snake[0].rect.y - 20
+        elif self.snake[0].direction == 'down':
+            self.snake[0].rect.y = self.snake[0].rect.y + 20
+        elif self.snake[0].direction == 'left':
+            self.snake[0].rect.x = self.snake[0].rect.x - 20
+        elif self.snake[0].direction == 'right':
+            self.snake[0].rect.x = self.snake[0].rect.x + 20
 
     def render(self):
         self.screen.fill((0, 0, 0))
-        p.draw.rect(self.screen, self.food.color, self.foodRect)
-        p.draw.rect(self.screen, (0, 150, 255), self.head)
+        p.draw.rect(self.screen, self.snake[0].color, self.snake[0].rect)
+        for i in range(1, len(self.snake)):
+            p.draw.rect(self.screen, self.snake[i].color, self.snake[i].rect)
+        self.food.draw_food_rect(self.screen, self.food.color, self.food.rect)
+
         p.display.flip()
 
 
